@@ -9,7 +9,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
+
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 allprojects {
     repositories {
@@ -27,5 +29,34 @@ android {
         targetSdkVersion 25
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
 
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile("com.nhaarman:mockito-kotlin:1.3.0") {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    testCompile 'junit:junit:4.12'
+
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
+        exclude group: 'com.android.support'
+    }
+
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+        exclude group: 'com.android.support'
+    }
+
+    androidTestCompile('com.github.VictorAlbertos:DeviceAnimationTestRule:0.0.2') {
+        exclude group: 'com.android.support'
+    }
 }
