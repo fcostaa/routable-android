@@ -1,0 +1,36 @@
+language: android
+
+android:
+  update_sdk: true  #Check for the updates each time you run the build.
+  components:
+    - tools
+    - platform-tools
+    - build-tools-25.0.2
+    - android-25
+    - android-22
+
+    # Additional components
+    - extra-android-m2repository
+    - extra-google-m2repository
+    - extra-android-support
+
+licenses:
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
+
+jdk:
+  - oraclejdk8
+
+script:
+  - "./gradlew clean testDebugUnitTest"
+
+sudo: false
+
+before_cache:
+    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+
+cache:
+  directories:
+    - $HOME/.gradle
+    - $HOME/.android/build-cache
