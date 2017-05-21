@@ -2,6 +2,8 @@
 
 Routable is an in-app native URL router, for Android. Also available for [iOS](https://github.com/usepropeller/routable-ios).
 
+[![Build Status](https://travis-ci.org/fcostaa/routable-android.svg?branch=master)](https://travis-ci.org/fcostaa/routable-android)
+
 ## Usage
 
 Set up your app's router and URLs:
