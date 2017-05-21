@@ -26,18 +26,14 @@
 
 package com.usepropeller.routable
 
-import java.net.URI
-import java.util.HashMap
-import kotlin.collections.Map.Entry
-
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-
-import org.apache.http.NameValuePair
 import org.apache.http.client.utils.URLEncodedUtils
+import java.net.URI
+import java.util.*
 
 class Router {
 
@@ -82,7 +78,7 @@ class Router {
      * animations or fragments, this class should be augmented.
      */
     class RouterOptions {
-        var openClass: Class<out Activity>
+        var openClass: Class<out Activity>? = null
         var callback: RouterCallback? = null
         var defaultParams: Map<String, String>? = null
 
@@ -195,7 +191,7 @@ class Router {
      * *
      * @param context The context which is used in the generated [Intent]
      */
-    fun openExternal(url: String, context: Context) {
+    fun openExternal(url: String, context: Context?) {
         this.openExternal(url, null, context)
     }
 
@@ -254,8 +250,8 @@ class Router {
      * *
      * @param context The context which is used in the generated [Intent]
      */
-    fun open(url: String, context: Context) {
-        this.open(url, null, context)
+    fun open(url: String, context: Context?) {
+        this.open(url, Bundle(), context)
     }
 
     /**
@@ -266,15 +262,15 @@ class Router {
      * *
      * @param context The context which is used in the generated [Intent]
      */
-    fun open(url: String, extras: Bundle?, context: Context?) {
+    fun open(url: String, extras: Bundle, context: Context?) {
         if (context == null) {
             throw ContextNotProvided(
                     "You need to supply a context for Router " + this.toString())
         }
         val params = this.paramsForUrl(url)
-        val options = params.routerOptions
+        val options = params!!.routerOptions
         if (options!!.callback != null) {
-            val routeContext = RouteContext(params.openParams, extras, context)
+            val routeContext = RouteContext(params.openParams!!.toMap(), Bundle(extras), context)
 
             options.callback!!.run(routeContext)
             return
@@ -302,14 +298,14 @@ class Router {
      * *
      * @return The [Intent] for the url
      */
-    fun intentFor(url: String): Intent {
+    fun intentFor(url: String): Intent? {
         val params = this.paramsForUrl(url)
 
         return intentFor(params)
     }
 
-    private fun intentFor(params: RouterParams): Intent {
-        val options = params.routerOptions
+    private fun intentFor(params: RouterParams?): Intent {
+        val options = params!!.routerOptions
         val intent = Intent()
         if (options!!.defaultParams != null) {
             for ((key, value) in options.defaultParams!!) {
@@ -329,7 +325,7 @@ class Router {
      */
     fun isCallbackUrl(url: String): Boolean {
         val params = this.paramsForUrl(url)
-        val options = params.routerOptions
+        val options = params!!.routerOptions
         return options!!.callback != null
     }
 
@@ -341,14 +337,14 @@ class Router {
      * *
      * @return The [Intent] for the url, with the correct [Activity] set, or null.
      */
-    fun intentFor(context: Context, url: String): Intent {
+    fun intentFor(context: Context, url: String): Intent? {
         val params = this.paramsForUrl(url)
 
         return intentFor(context, params)
     }
 
-    private fun intentFor(context: Context, params: RouterParams): Intent? {
-        val options = params.routerOptions
+    private fun intentFor(context: Context, params: RouterParams?): Intent? {
+        val options = params!!.routerOptions
         if (options!!.callback != null) {
             return null
         }
@@ -363,7 +359,7 @@ class Router {
 	 * Takes a url (i.e. "/users/16/hello") and breaks it into a {@link RouterParams} instance where
 	 * each of the parameters (like ":id") has been parsed.
 	 */
-    private fun paramsForUrl(url: String): RouterParams {
+    private fun paramsForUrl(url: String): RouterParams? {
         val cleanedUrl = cleanUrl(url)
 
         val parsedUri = URI.create("http://tempuri.org/" + cleanedUrl)
@@ -400,7 +396,9 @@ class Router {
         val query = URLEncodedUtils.parse(parsedUri, "utf-8")
 
         for (pair in query) {
-            routerParams.openParams!!.put(pair.name, pair.value)
+            if (pair != null && pair.name != null && pair.value != null) {
+                routerParams.openParams?.put(pair.name, pair.value)
+            }
         }
 
         this._cachedRoutes.put(cleanedUrl, routerParams)
@@ -452,29 +450,33 @@ class Router {
      * Thrown if a given route is not found.
      */
     class RouteNotFoundException(message: String) : RuntimeException(message) {
-        companion object {
-            private val serialVersionUID = -2278644339983544651L
-        }
+//        companion object {
+//            private val serialVersionUID = -2278644339983544651L
+//        }
     }
 
     /**
      * Thrown if no context has been found.
      */
     class ContextNotProvided(message: String) : RuntimeException(message) {
-        companion object {
-            private val serialVersionUID = -1381427067387547157L
-        }
+//        companion object {
+//            private val serialVersionUID = -1381427067387547157L
+//        }
     }
 
     companion object {
-        private val _router = Router()
+
+
+//        @JvmStatic
+//        private val _router = Router()
 
         /**
          * A globally accessible Router instance that will work for
          * most use cases.
          */
+        @JvmStatic
         fun sharedRouter(): Router {
-            return _router
+            return Router()
         }
     }
 }

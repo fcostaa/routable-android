@@ -21,12 +21,12 @@ public class RouterActivity extends Activity {
 		    Uri data = intent.getData();
 		    String protocol = data.getScheme() + "://";
 		    url = data.toString().replaceFirst(protocol, "");
-		    if (Router.Companion.sharedRouter().getRootUrl() != null) {
-			    Router.Companion.sharedRouter().open(Router.Companion.sharedRouter().getRootUrl());
+		    if (Router.sharedRouter().getRootUrl() != null) {
+			    Router.sharedRouter().open(Router.sharedRouter().getRootUrl());
 		    }
 	    }
 
-	    Router.Companion.sharedRouter().open(url);
+	    Router.sharedRouter().open(url);
 
 	    setResult(RESULT_OK, null);
 	    finish();
